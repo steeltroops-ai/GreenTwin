@@ -5,6 +5,7 @@ import ErrorReporter from "@/components/ErrorReporter";
 import Script from "next/script";
 import { WebSocketProvider } from "@/contexts/WebSocketContext";
 import { ClerkProvider } from "@clerk/nextjs";
+import { MainLayout } from "@/components/layout/MainLayout";
 
 export const metadata: Metadata = {
   title: "Green Twin – AI Carbon Companion",
@@ -32,7 +33,9 @@ export default function RootLayout({
             data-debug="true"
             data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
           />
-          <WebSocketProvider>{children}</WebSocketProvider>
+          <WebSocketProvider>
+            <MainLayout>{children}</MainLayout>
+          </WebSocketProvider>
           <VisualEditsMessenger />
         </body>
       </html>

@@ -59,7 +59,7 @@ import {
 } from "@/contexts/WebSocketContext";
 import { PredictiveTimeline } from "@/components/PredictiveTimeline";
 import { AchievementSystem } from "@/components/AchievementSystem";
-import { ChatInterface } from "@/components/ai-coach/ChatInterface";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 function formatKg(kg: number | undefined) {
   if (kg === undefined || kg === null || isNaN(kg)) {
@@ -75,7 +75,6 @@ function currency(n: number) {
 // Navigation tabs configuration
 const NAVIGATION_TABS = [
   { id: "dashboard", label: "Dashboard", icon: Sparkles },
-  { id: "coach", label: "AI Coach", icon: MessageSquare },
   { id: "community", label: "Community", icon: Trophy },
   { id: "tools", label: "Tools", icon: Target },
   { id: "analytics", label: "Analytics", icon: LineChart },
@@ -86,6 +85,7 @@ type TabId = (typeof NAVIGATION_TABS)[number]["id"];
 export const HomeClient = () => {
   const [dark, setDark] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+  const { open: openSidebar } = useSidebar();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -298,10 +298,10 @@ export const HomeClient = () => {
                     size="sm"
                     variant="outline"
                     className="flex-1 button-enhanced font-semibold"
-                    onClick={() => setActiveTab("coach")}
+                    onClick={openSidebar}
                   >
                     <MessageCircle className="mr-1 size-3" />
-                    Chat
+                    AI Coach
                   </Button>
                   <Button
                     size="sm"
@@ -601,10 +601,10 @@ export const HomeClient = () => {
                 size="sm"
                 variant="outline"
                 className="flex-1 text-xs"
-                onClick={() => setActiveTab("coach")}
+                onClick={openSidebar}
               >
                 <Zap className="mr-1 size-3" />
-                Get Tips
+                AI Coach
               </Button>
               <Button
                 size="sm"
@@ -620,60 +620,6 @@ export const HomeClient = () => {
         </Card>
       </section>
     </div>
-  );
-
-  const renderCoach = () => (
-    <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
-      <div className="lg:col-span-2 h-[500px]">
-        <ChatInterface />
-      </div>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2">
-            <LineChart className="size-5" /> Economic Impact
-          </CardTitle>
-          <CardDescription>Personalized ROI from your swaps</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">
-              Monthly CO₂e savings
-            </span>
-            <span className="font-medium">~{formatKg(12.4)}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">
-              Annual bill savings
-            </span>
-            <span className="font-medium">{currency(68.4)}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">
-              Payback on LED swap
-            </span>
-            <span className="font-medium">3.2 months</span>
-          </div>
-          <Button className="w-full mt-4" variant="outline" size="sm">
-            View my savings plan
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2">
-            <Bolt className="size-5" /> Extension Activity
-          </CardTitle>
-          <CardDescription>
-            Real-time sync with your browser extension
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RealtimeEventsFeed />
-        </CardContent>
-      </Card>
-    </section>
   );
 
   const renderCommunity = () => (
@@ -968,7 +914,6 @@ export const HomeClient = () => {
         {/* Tabbed Content with smooth transitions */}
         <div className="animate-in fade-in-0 duration-300 max-w-7xl mx-auto">
           {activeTab === "dashboard" && renderDashboard()}
-          {activeTab === "coach" && renderCoach()}
           {activeTab === "community" && renderCommunity()}
           {activeTab === "tools" && renderTools()}
           {activeTab === "analytics" && renderAnalytics()}
