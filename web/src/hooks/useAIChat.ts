@@ -27,7 +27,7 @@ export function useAIChat(options: UseAIChatOptions = {}) {
   const sendMessage = useCallback(
     async (
       content: string,
-      options: {
+      apiOptions: {
         stream?: boolean;
         includeFactCheck?: boolean;
         includeToolRecommendations?: boolean;
@@ -59,10 +59,10 @@ export function useAIChat(options: UseAIChatOptions = {}) {
       abortControllerRef.current = new AbortController();
 
       try {
-        if (options.stream) {
-          await handleStreamingResponse(userMessage, options);
+        if (apiOptions.stream) {
+          await handleStreamingResponse(userMessage, apiOptions);
         } else {
-          await handleRegularResponse(userMessage, options);
+          await handleRegularResponse(userMessage, apiOptions);
         }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {

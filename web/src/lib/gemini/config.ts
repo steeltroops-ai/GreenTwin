@@ -1,21 +1,30 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} from "@google/generative-ai";
+
+type SafetySetting = {
+  category: HarmCategory;
+  threshold: HarmBlockThreshold;
+};
 
 // Environment validation
 function validateEnvironment() {
   const apiKey = process.env.GEMINI_API_KEY;
-  
+
   if (!apiKey) {
     throw new Error(
       "GEMINI_API_KEY is not set. Please add it to your .env.local file."
     );
   }
-  
+
   if (apiKey === "YOUR_GEMINI_API_KEY") {
     throw new Error(
       "Please replace YOUR_GEMINI_API_KEY with your actual Gemini API key in .env.local"
     );
   }
-  
+
   return apiKey;
 }
 
@@ -36,7 +45,7 @@ export const genAI = new GoogleGenerativeAI(geminiConfig.apiKey);
 
 // Get the model instance
 export const getGeminiModel = () => {
-  return genAI.getGenerativeModel({ 
+  return genAI.getGenerativeModel({
     model: geminiConfig.model,
     generationConfig: {
       temperature: geminiConfig.temperature,
@@ -46,21 +55,21 @@ export const getGeminiModel = () => {
 };
 
 // Safety settings for enterprise use
-export const safetySettings = [
+export const safetySettings: SafetySetting[] = [
   {
-    category: "HARM_CATEGORY_HARASSMENT",
-    threshold: "BLOCK_MEDIUM_AND_ABOVE",
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
   },
   {
-    category: "HARM_CATEGORY_HATE_SPEECH",
-    threshold: "BLOCK_MEDIUM_AND_ABOVE",
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
   },
   {
-    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-    threshold: "BLOCK_MEDIUM_AND_ABOVE",
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
   },
   {
-    category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-    threshold: "BLOCK_MEDIUM_AND_ABOVE",
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
   },
-] as const;
+];

@@ -47,7 +47,7 @@ export class GeminiClient {
       // Generate response
       const result = await this.model.generateContent({
         contents: conversationHistory,
-        safetySettings: [...safetySettings],
+        safetySettings,
         generationConfig: {
           temperature: options.temperature || 0.7,
           maxOutputTokens: options.maxTokens || 8192,
@@ -146,7 +146,7 @@ export class GeminiClient {
       // Generate streaming response
       const result = await this.model.generateContentStream({
         contents: conversationHistory,
-        safetySettings: [...safetySettings],
+        safetySettings,
         generationConfig: {
           temperature: options.temperature || 0.7,
           maxOutputTokens: options.maxTokens || 8192,
