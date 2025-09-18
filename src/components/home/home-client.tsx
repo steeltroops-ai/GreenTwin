@@ -37,11 +37,13 @@ import {
   LineChart,
   MessageCircle,
   MessageSquare,
+  Moon,
   PieChart,
   Plus,
   Puzzle,
   Share2,
   Sparkles,
+  Sun,
   Target,
   TrendingDown,
   Trophy,
@@ -1187,8 +1189,15 @@ export const HomeClient = () => {
           </div>
 
           {/* Theme Toggle and Install Extension */}
-          <div className="flex items-center gap-3">
-            <Switch checked={dark} onCheckedChange={setDark} />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setDark(!dark)}
+              className="button-enhanced p-2"
+            >
+              {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            </Button>
             <Button
               className="button-enhanced bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0"
               asChild
@@ -1222,7 +1231,7 @@ export const HomeClient = () => {
 
       <main
         className={cn(
-          "flex-1 w-full px-4 sm:px-6 pt-[100px] pb-16 overflow-y-auto transition-all duration-300 ease-in-out",
+          "flex-1 w-full px-4 sm:px-6 pt-[93px] pb-16 overflow-y-auto transition-all duration-300 ease-in-out",
           sidebarIsOpen && "lg:mr-96"
         )}
       >

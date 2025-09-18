@@ -29,7 +29,7 @@ export function AiCoachSidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed top-[100px] right-0 h-[calc(100vh-100px)] bg-background/98 backdrop-blur-md border-l border-border/30 z-50 transition-transform duration-300 ease-in-out shadow-lg",
+          "fixed top-[77px] right-0 h-[calc(100vh-77px)] bg-background/98 backdrop-blur-md border-l border-border/30 z-50 transition-transform duration-300 ease-in-out shadow-lg",
           "flex flex-col",
           // Desktop: Fixed width sidebar
           "lg:w-96",
@@ -39,8 +39,8 @@ export function AiCoachSidebar() {
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* Cohesive Header matching main header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-border/30 bg-background/98 backdrop-blur-md shadow-lg">
+        {/* Clean Header matching main header */}
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-border/30 bg-background/98 backdrop-blur-md">
           <div>
             <h2 className="text-base font-bold tracking-tight bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
               AI Coach
@@ -53,7 +53,7 @@ export function AiCoachSidebar() {
             variant="ghost"
             size="sm"
             onClick={close}
-            className="h-8 w-8 p-0 hover:bg-muted/50 rounded-lg transition-all duration-200"
+            className="h-8 w-8 p-0 hover:bg-muted/50 rounded-lg transition-all duration-200 button-enhanced"
           >
             <PanelRightClose className="size-4" />
             <span className="sr-only">Close sidebar</span>
@@ -72,6 +72,9 @@ export function AiCoachSidebar() {
 export function AiCoachToggleButton() {
   const { isOpen, toggle } = useSidebar();
 
+  // Hide button when sidebar is open
+  if (isOpen) return null;
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -86,23 +89,15 @@ export function AiCoachToggleButton() {
               "text-white border-0 hover:border-0",
               "backdrop-blur-md hover:shadow-xl hover:scale-105",
               "font-semibold px-4 py-3 h-auto rounded-xl",
-              "ring-1 ring-green-500/20 hover:ring-green-400/30",
-              // Move button when sidebar is open on desktop
-              isOpen && "lg:right-[26rem]"
+              "ring-1 ring-green-500/20 hover:ring-green-400/30"
             )}
           >
             <div className="relative">
               <MessageSquare className="size-5 mr-2" />
-              {!isOpen && (
-                <div className="absolute -top-1 -right-1 size-2 bg-green-300 rounded-full animate-pulse"></div>
-              )}
+              <div className="absolute -top-1 -right-1 size-2 bg-green-300 rounded-full animate-pulse"></div>
             </div>
-            {!isOpen && (
-              <>
-                <span className="hidden sm:inline text-sm">AI Coach</span>
-                <span className="sm:hidden text-sm">Chat</span>
-              </>
-            )}
+            <span className="hidden sm:inline text-sm">AI Coach</span>
+            <span className="sm:hidden text-sm">Chat</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent
@@ -110,7 +105,7 @@ export function AiCoachToggleButton() {
           className="bg-popover text-popover-foreground"
         >
           <p className="text-sm">
-            {isOpen ? "Close AI Coach" : "Open AI Coach"}
+            Open AI Coach
             <kbd className="ml-2 px-1.5 py-0.5 text-xs bg-muted rounded border">
               Ctrl+K
             </kbd>
