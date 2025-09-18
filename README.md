@@ -13,29 +13,29 @@ GreenTwin is a revolutionary climate technology platform that creates a real-tim
 
 ### 🎯 Key Value Propositions
 
-- **🤖 AI-Powered Intelligence**: Enterprise-grade Google Gemini AI provides personalized coaching and predictive interventions
-- **📊 Passive Tracking**: Seamlessly monitors shopping, travel, and energy consumption without manual input
-- **🔮 Predictive Interventions**: Prevents high-carbon actions before they happen with smart nudges and alternatives
-- **🎮 Gamified Engagement**: Streaks, leaderboards, and achievements drive long-term behavior change
-- **🌍 Massive Scale Impact**: 1M users could reduce 500K tons CO₂/year (equivalent to planting 10M trees)
+- **AI-Powered Intelligence**: Enterprise-grade Google Gemini AI provides personalized coaching and predictive interventions
+- **Passive Tracking**: Seamlessly monitors shopping, travel, and energy consumption without manual input
+- **Predictive Interventions**: Prevents high-carbon actions before they happen with smart nudges and alternatives
+- **Gamified Engagement**: Streaks, leaderboards, and achievements drive long-term behavior change
+- **Massive Scale Impact**: 1M users could reduce 500K tons CO₂/year (equivalent to planting 10M trees)
 
 ## ✨ Features
 
-### 🧠 AI Coach & Predictive Analytics
+### AI Coach & Predictive Analytics
 
 - **Real-time AI Coaching**: Personalized environmental guidance powered by Google Gemini
 - **Predictive Timeline**: AI-powered forecasting of future carbon emissions with confidence intervals
 - **Smart Interventions**: Context-aware nudges that prevent high-carbon actions before they occur
 - **Fact-Checking Engine**: Real-time climate misinformation detection with source verification
 
-### 📈 Comprehensive Tracking & Analytics
+### Comprehensive Tracking & Analytics
 
 - **Multi-Platform Monitoring**: Chrome extension + web dashboard for complete coverage
 - **Carbon Footprint Visualization**: Interactive charts, Sankey diagrams, and impact projections
 - **Behavioral Pattern Recognition**: Machine learning algorithms identify optimization opportunities
 - **Grid-Aware Energy Optimization**: Real-time electricity grid intensity integration
 
-### 🎯 Engagement & Social Impact
+### Engagement & Social Impact
 
 - **Achievement System**: Unlock badges and milestones for sustainable actions
 - **Anonymous Leaderboards**: Compete with friends while maintaining privacy
@@ -73,7 +73,7 @@ GreenTwin is a revolutionary climate technology platform that creates a real-tim
 - **CI/CD**: GitHub Actions with automated testing
 - **Monitoring**: Real-time performance and error tracking
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -86,16 +86,17 @@ GreenTwin is a revolutionary climate technology platform that creates a real-tim
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/steeltroops-ai/GreenTwin.git
+
+git clone <https://github.com/steeltroops-ai/GreenTwin.git>
    cd GreenTwin
-   ```
+
+```
 
 2. **Install dependencies**
 
    ```bash
-   cd web
-   bun install
-   ```
+bun install
+```
 
 3. **Set up environment variables**
 
@@ -106,9 +107,11 @@ GreenTwin is a revolutionary climate technology platform that creates a real-tim
    Add your API keys:
 
    ```env
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
    CLERK_SECRET_KEY=your_clerk_secret_key
    GEMINI_API_KEY=your_gemini_api_key
+
    ```
 
 4. **Run the development server**
@@ -118,78 +121,52 @@ GreenTwin is a revolutionary climate technology platform that creates a real-tim
    ```
 
 5. **Open your browser**
-   Navigate to [http://localhost:3001](http://localhost:3001)
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
 ### Chrome Extension Setup
 
-1. **Build the extension**
-
-   ```bash
-   cd extension
-   bun run build
-   ```
-
-2. **Load in Chrome**
+1. **Load the extension**
    - Open `chrome://extensions/`
    - Enable "Developer mode"
    - Click "Load unpacked"
-   - Select the `extension/dist` folder
-
-## 📱 Usage Examples
-
-### AI-Powered Carbon Coaching
-
-```typescript
-// Example AI coaching interaction
-const response = await aiCoach.getRecommendation({
-  context: "shopping",
-  item: "beef",
-  alternatives: true
-});
-// Returns: "Consider plant-based alternatives - saves 15kg CO₂/month"
-```
-
-### Predictive Interventions
-
-```typescript
-// Smart intervention system
-const intervention = await predictiveEngine.analyzeAction({
-  type: "purchase",
-  category: "food",
-  carbonImpact: 8.5
-});
-// Triggers: 24-hour cooling-off period with alternatives
-```
-
-### Real-time Tracking
-
-```typescript
-// Passive carbon tracking
-const footprint = await tracker.getCurrentFootprint();
-// Returns: { daily: 12.3, weekly: 86.1, monthly: 369.2 }
-```
+   - Select the `public/extension` folder
 
 ## 🏗️ Project Structure
 
-```
+```text
 GreenTwin/
-├── web/                          # Next.js web application
-│   ├── src/
-│   │   ├── app/                  # App router pages
-│   │   ├── components/           # React components
-│   │   │   ├── ai-coach/         # AI coaching interface
-│   │   │   ├── charts/           # Data visualization
-│   │   │   └── ui/               # Reusable UI components
-│   │   ├── lib/                  # Utility libraries
-│   │   │   ├── gemini/           # AI integration
-│   │   │   └── monitoring/       # Performance tracking
-│   │   └── hooks/                # Custom React hooks
-├── extension/                    # Chrome extension
-│   ├── manifest.json            # Extension configuration
-│   ├── content-scripts/         # Site-specific tracking
-│   └── background/              # Background processing
-├── docs/                        # Documentation
-└── README.md                    # This file
+├── src/                          # Next.js application source
+│   ├── app/                      # App router pages and API routes
+│   │   ├── api/                  # API endpoints
+│   │   └── pitch/                # Pitch presentation page
+│   ├── components/               # React components
+│   │   ├── ai-coach/             # AI coaching interface
+│   │   ├── home/                 # Homepage components
+│   │   └── ui/                   # Reusable UI components
+│   ├── lib/                      # Utility libraries
+│   │   ├── gemini/               # Google Gemini AI integration
+│   │   ├── monitoring/           # Performance tracking
+│   │   └── storage/              # Data storage utilities
+│   ├── hooks/                    # Custom React hooks
+│   └── contexts/                 # React context providers
+├── public/                       # Static assets
+│   └── extension/                # Chrome extension files
+│       ├── manifest.json         # Extension configuration
+│       ├── content.js            # Content scripts
+│       ├── background.js         # Background service worker
+│       └── popup.html            # Extension popup
+├── lib/                          # Shared libraries
+│   ├── prediction-engine.ts     # AI prediction algorithms
+│   ├── recommendations-engine.ts # Recommendation system
+│   └── websocket-server.ts      # Real-time communication
+├── docs/                         # Documentation
+│   ├── api-integration.md        # API integration guide
+│   ├── deployment.md             # Deployment instructions
+│   ├── extension-development.md  # Extension development guide
+│   └── features.md               # Feature documentation
+├── HACKATHON_SUBMISSION_FORM.md  # Hackathon submission content
+├── CONTRIBUTING.md               # Contribution guidelines
+└── README.md                     # This file
 ```
 
 ## 🧪 Testing
@@ -210,33 +187,7 @@ bun run lint
 bun run build
 ```
 
-### Quality Assurance
-
-- **TypeScript**: 100% type coverage
-- **ESLint**: Zero warnings policy
-- **Performance**: Core Web Vitals optimization
-- **Accessibility**: WCAG 2.1 AA compliance
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Standards
-
-- Follow TypeScript best practices
-- Use conventional commit messages
-- Maintain test coverage above 80%
-- Document all public APIs
-
-## 📊 Impact Metrics
+## Impact Metrics
 
 ### Individual Impact
 
@@ -280,28 +231,10 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - [ ] Climate tech ecosystem leadership
 - [ ] IPO preparation and scaling
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Google Gemini AI** for powering our intelligent coaching system
 - **Clerk** for seamless authentication and user management
 - **Vercel** for world-class hosting and deployment
 - **Climate tech community** for inspiration and support
 - **Hackathon organizers** for creating this innovation opportunity
-
-## 📞 Contact & Support
-
-- **GitHub**: [steeltroops-ai/GreenTwin](https://github.com/steeltroops-ai/GreenTwin)
-- **Issues**: [Report bugs or request features](https://github.com/steeltroops-ai/GreenTwin/issues)
-- **Discussions**: [Join our community](https://github.com/steeltroops-ai/GreenTwin/discussions)
-
----
-
-<div align="center">
-  <strong>🌍 Building the future of climate action, one digital twin at a time</strong>
-  <br>
-  <em>Made with ❤️ for our planet</em>
-</div>

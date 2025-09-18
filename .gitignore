@@ -10,29 +10,45 @@ node_modules/
 !.yarn/releases
 !.yarn/versions
 
+# bun
+.bun/
+bun.lockb
+
 # testing
 /coverage
+*.lcov
 
 # next.js
-web/.next/
+/.next/
 /out/
+.clerk/
+.clerk/tmp/
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
 *.pem
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # local env files
 .env*.local
 .env
+.env.development
+.env.production
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+bun-debug.log*
 
 # vercel
 .vercel
@@ -40,3 +56,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# chrome extension development
+extension-build/
+*.crx
+*.pem
+
+# temporary files
+*.tmp
+*.temp
+.cache/
