@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "Green Twin",
+  "description": "Passive shopping/travel carbon tracking + misinformation detection with grid-aware nudges.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "Green Twin",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": [
+    "*://*.amazon.com/*",
+    "*://*.amazon.*/*",
+    "*://www.google.com/travel/flights/*",
+    "*://*.kayak.com/*",
+    "*://*.expedia.*/*",
+    "*://*.booking.com/*",
+    "https://*/*",
+    "http://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.amazon.com/*",
+        "*://*.amazon.*/*",
+        "*://www.google.com/travel/flights/*",
+        "*://*.kayak.com/*",
+        "*://*.expedia.*/*",
+        "*://*.booking.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["misinfo.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["nudge.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
