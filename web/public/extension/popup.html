@@ -5,13 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Green Twin</title>
     <style>
-      body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; padding: 12px; width: 340px; }
-      .card { border:1px solid #e6e6e6; border-radius:12px; padding:12px; margin-bottom:10px; background:#fff }
-      .row { display:flex; justify-content:space-between; align-items:center; font-size:13px; margin:6px 0 }
-      .title { font-weight:600; font-size:14px; display:flex; gap:8px; align-items:center }
-      .muted { color:#666; font-size:12px }
-      .switch { display:flex; align-items:center; gap:8px }
-      button { background:#111; color:#fff; border:none; padding:8px 10px; border-radius:10px; cursor:pointer }
+      body {
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        margin: 0;
+        padding: 12px;
+        width: 340px;
+      }
+      .card {
+        border: 1px solid #e6e6e6;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+        background: #fff;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        margin: 6px 0;
+      }
+      .title {
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .muted {
+        color: #666;
+        font-size: 12px;
+      }
+      .switch {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      button {
+        background: #111;
+        color: #fff;
+        border: none;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -23,8 +67,15 @@
     <div class="card" id="stats">
       <div class="row"><span>Monthly est. CO₂e</span><b id="kg">–</b></div>
       <div class="row"><span>Items tracked</span><b id="items">–</b></div>
-      <div class="row"><span>Misinformation flags</span><b id="flags">–</b></div>
+      <div class="row">
+        <span>Misinformation flags</span><b id="flags">–</b>
+      </div>
       <div class="row"><button id="open-dashboard">Open dashboard</button></div>
+    </div>
+
+    <div class="card" id="delays-card" style="display: none">
+      <div class="title">⏰ Active Purchase Delays</div>
+      <div id="delays-list"></div>
     </div>
 
     <div class="card">
@@ -34,7 +85,9 @@
       </div>
     </div>
 
-    <div class="muted">Tip: On Amazon or flight search pages, look for a bottom-right nudge.</div>
+    <div class="muted">
+      Tip: On Amazon or flight search pages, look for a bottom-right nudge.
+    </div>
 
     <script src="popup.js"></script>
   </body>

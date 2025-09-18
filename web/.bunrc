@@ -1,0 +1,10 @@
+# Bun configuration file
+# This ensures bun is used as the primary package manager
+
+[install]
+# Use bun for all package installations
+registry = "https://registry.npmjs.org/"
+
+[run]
+# Prefer bun for running scripts
+shell = "bun"

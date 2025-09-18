@@ -3,10 +3,12 @@ import "./globals.css";
 import VisualEditsMessenger from "../visual-edits/VisualEditsMessenger";
 import ErrorReporter from "@/components/ErrorReporter";
 import Script from "next/script";
+import { WebSocketProvider } from "@/contexts/WebSocketContext";
 
 export const metadata: Metadata = {
   title: "Green Twin – AI Carbon Companion",
-  description: "Personal carbon digital twin with passive tracking, grid‑aware nudges, and AI myth‑busting.",
+  description:
+    "Personal carbon digital twin with passive tracking, grid‑aware nudges, and AI myth‑busting.",
 };
 
 export default function RootLayout({
@@ -28,7 +30,7 @@ export default function RootLayout({
           data-debug="true"
           data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
         />
-        {children}
+        <WebSocketProvider>{children}</WebSocketProvider>
         <VisualEditsMessenger />
       </body>
     </html>

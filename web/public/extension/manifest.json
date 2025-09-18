@@ -11,7 +11,19 @@
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["storage", "activeTab", "scripting"],
+  "web_accessible_resources": [
+    {
+      "resources": ["websocket-client.js", "offline-queue.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "alarms",
+    "notifications"
+  ],
   "host_permissions": [
     "*://*.amazon.com/*",
     "*://*.amazon.*/*",
@@ -32,7 +44,13 @@
         "*://*.expedia.*/*",
         "*://*.booking.com/*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "nudge-timing.js",
+        "predictive-interventions.js",
+        "behavior-profiler.js",
+        "adaptive-nudges.js",
+        "content.js"
+      ],
       "run_at": "document_idle"
     },
     {
