@@ -14,7 +14,6 @@ export interface ChatMessage {
     sources?: string[];
     factChecked?: boolean;
     toolsUsed?: string[];
-    isFallback?: boolean;
   };
 }
 

@@ -32,7 +32,6 @@ import {
   Calendar,
   Clock,
   Download,
-  Info,
   Leaf,
   LineChart,
   MessageCircle,
@@ -60,8 +59,7 @@ import {
 } from "@/contexts/WebSocketContext";
 import { PredictiveTimeline } from "@/components/PredictiveTimeline";
 import { AchievementSystem } from "@/components/AchievementSystem";
-import { useSidebar } from "@/contexts/SidebarContext";
-import { cn } from "@/lib/utils";
+import { ChatInterface } from "@/components/ai-coach/ChatInterface";
 
 function formatKg(kg: number | undefined) {
   if (kg === undefined || kg === null || isNaN(kg)) {
@@ -77,10 +75,10 @@ function currency(n: number) {
 // Navigation tabs configuration
 const NAVIGATION_TABS = [
   { id: "dashboard", label: "Dashboard", icon: Sparkles },
+  { id: "coach", label: "AI Coach", icon: MessageSquare },
   { id: "community", label: "Community", icon: Trophy },
   { id: "tools", label: "Tools", icon: Target },
   { id: "analytics", label: "Analytics", icon: LineChart },
-  { id: "about", label: "About", icon: Info },
 ] as const;
 
 type TabId = (typeof NAVIGATION_TABS)[number]["id"];
@@ -88,59 +86,10 @@ type TabId = (typeof NAVIGATION_TABS)[number]["id"];
 export const HomeClient = () => {
   const [dark, setDark] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
-  const [showFooter, setShowFooter] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const { open: openSidebar, isOpen: sidebarIsOpen } = useSidebar();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
-
-  // Footer auto-hide functionality
-  useEffect(() => {
-    let hideTimeout: NodeJS.Timeout;
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      // Show footer when scrolling down, hide when scrolling up
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setShowFooter(false);
-      } else {
-        setShowFooter(true);
-      }
-
-      setLastScrollY(currentScrollY);
-
-      // Auto-hide after 2 seconds of inactivity
-      clearTimeout(hideTimeout);
-      setShowFooter(true);
-      hideTimeout = setTimeout(() => {
-        if (window.scrollY > 100) {
-          setShowFooter(false);
-        }
-      }, 2000);
-    };
-
-    const handleMouseMove = () => {
-      setShowFooter(true);
-      clearTimeout(hideTimeout);
-      hideTimeout = setTimeout(() => {
-        if (window.scrollY > 100) {
-          setShowFooter(false);
-        }
-      }, 2000);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-      clearTimeout(hideTimeout);
-    };
-  }, [lastScrollY]);
 
   // Mock live grid intensity (gCO2/kWh)
   const [grid, setGrid] = useState(428);
@@ -349,10 +298,10 @@ export const HomeClient = () => {
                     size="sm"
                     variant="outline"
                     className="flex-1 button-enhanced font-semibold"
-                    onClick={openSidebar}
+                    onClick={() => setActiveTab("coach")}
                   >
                     <MessageCircle className="mr-1 size-3" />
-                    AI Coach
+                    Chat
                   </Button>
                   <Button
                     size="sm"
@@ -652,10 +601,10 @@ export const HomeClient = () => {
                 size="sm"
                 variant="outline"
                 className="flex-1 text-xs"
-                onClick={openSidebar}
+                onClick={() => setActiveTab("coach")}
               >
                 <Zap className="mr-1 size-3" />
-                AI Coach
+                Get Tips
               </Button>
               <Button
                 size="sm"
@@ -671,6 +620,60 @@ export const HomeClient = () => {
         </Card>
       </section>
     </div>
+  );
+
+  const renderCoach = () => (
+    <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
+      <div className="lg:col-span-2 h-[500px]">
+        <ChatInterface />
+      </div>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <LineChart className="size-5" /> Economic Impact
+          </CardTitle>
+          <CardDescription>Personalized ROI from your swaps</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Monthly CO₂e savings
+            </span>
+            <span className="font-medium">~{formatKg(12.4)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Annual bill savings
+            </span>
+            <span className="font-medium">{currency(68.4)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Payback on LED swap
+            </span>
+            <span className="font-medium">3.2 months</span>
+          </div>
+          <Button className="w-full mt-4" variant="outline" size="sm">
+            View my savings plan
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Bolt className="size-5" /> Extension Activity
+          </CardTitle>
+          <CardDescription>
+            Real-time sync with your browser extension
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RealtimeEventsFeed />
+        </CardContent>
+      </Card>
+    </section>
   );
 
   const renderCommunity = () => (
@@ -861,306 +864,79 @@ export const HomeClient = () => {
     </section>
   );
 
-  const renderAbout = () => (
-    <section className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-      {/* Project Overview */}
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl">
-            <Leaf className="size-6 text-green-600" />
-            About GreenTwin
-          </CardTitle>
-          <CardDescription className="text-base">
-            Your AI-powered carbon companion for sustainable living
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Project Vision</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              GreenTwin is an innovative AI-powered platform designed to help
-              individuals and communities reduce their carbon footprint through
-              intelligent tracking, personalized recommendations, and real-time
-              environmental insights. Our mission is to make sustainable living
-              accessible, engaging, and impactful for everyone.
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-3">How It Works</h3>
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="flex gap-3">
-                <div className="size-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-bold text-green-600">1</span>
-                </div>
-                <div>
-                  <p className="font-medium">Smart Tracking</p>
-                  <p className="text-sm text-muted-foreground">
-                    Automatically monitor your carbon footprint through our
-                    browser extension
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-bold text-blue-600">2</span>
-                </div>
-                <div>
-                  <p className="font-medium">AI Coaching</p>
-                  <p className="text-sm text-muted-foreground">
-                    Get personalized sustainability advice from our AI coach
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="size-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-bold text-purple-600">3</span>
-                </div>
-                <div>
-                  <p className="font-medium">Grid Awareness</p>
-                  <p className="text-sm text-muted-foreground">
-                    Time your energy usage when the grid is cleanest
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="size-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-bold text-orange-600">4</span>
-                </div>
-                <div>
-                  <p className="font-medium">Community Impact</p>
-                  <p className="text-sm text-muted-foreground">
-                    Connect with others and amplify your environmental impact
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Project Goals & Impact */}
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="size-5 text-emerald-600" />
-            Project Goals & Environmental Impact
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <h4 className="font-semibold mb-3 text-green-600">
-                Short-term Goals
-              </h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <div className="size-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
-                  <span>
-                    Achieve 10,000+ active users tracking their carbon footprint
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="size-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
-                  <span>Deploy browser extension to Chrome Web Store</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="size-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
-                  <span>Integrate with 50+ popular e-commerce platforms</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="size-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
-                  <span>Build community features and social challenges</span>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-3 text-blue-600">
-                Long-term Vision
-              </h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <div className="size-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
-                  <span>
-                    Scale to 1 million users making measurable climate impact
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="size-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
-                  <span>
-                    Partner with corporations for enterprise sustainability
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="size-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
-                  <span>Develop AI-powered carbon offset marketplace</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="size-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
-                  <span>Create global sustainability research platform</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/30 dark:to-blue-950/30 rounded-lg p-6">
-            <h4 className="font-semibold mb-3 text-center">
-              Projected Environmental Impact
-            </h4>
-            <div className="grid gap-4 md:grid-cols-3 text-center">
-              <div>
-                <div className="text-2xl font-bold text-green-600">
-                  2.5M tons
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  CO₂ reduction potential
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-blue-600">$50M</div>
-                <div className="text-sm text-muted-foreground">
-                  Consumer savings
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-purple-600">1M+</div>
-                <div className="text-sm text-muted-foreground">
-                  Lives impacted
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Developer & Team */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Info className="size-5 text-indigo-600" />
-            Developer & Vision
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-center">
-            <div className="size-16 rounded-full bg-gradient-to-r from-green-500 to-blue-500 mx-auto mb-4 flex items-center justify-center text-white font-bold text-xl">
-              M
-            </div>
-            <h4 className="font-semibold">Mayank</h4>
-            <p className="text-sm text-muted-foreground mb-4">
-              AI + Fullstack + Robotics Software Engineer
-            </p>
-          </div>
-
-          <div className="space-y-3 text-sm">
-            <div>
-              <h5 className="font-medium mb-1">Expertise</h5>
-              <p className="text-muted-foreground">
-                Full-stack development, AI/ML systems, robotics engineering, and
-                sustainable technology solutions
-              </p>
-            </div>
-            <div>
-              <h5 className="font-medium mb-1">Mission</h5>
-              <p className="text-muted-foreground">
-                Building scalable, research-driven solutions that create
-                measurable environmental impact through technology
-              </p>
-            </div>
-            <div>
-              <h5 className="font-medium mb-1">Approach</h5>
-              <p className="text-muted-foreground">
-                Combining cutting-edge AI with user-centric design to make
-                sustainability accessible and engaging for everyone
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Technical Architecture */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="size-5 text-purple-600" />
-            Technical Architecture
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold mb-2">System Design</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <div className="size-1.5 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
-                <span>Microservices architecture with Next.js App Router</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="size-1.5 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
-                <span>Real-time WebSocket connections for live updates</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="size-1.5 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
-                <span>AI-powered analytics with Google Gemini 1.5 Pro</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="size-1.5 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
-                <span>Chrome extension with content script injection</span>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Performance & Scalability</h4>
-            <div className="grid gap-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Core Web Vitals</span>
-                <Badge variant="secondary" className="text-green-600">
-                  Excellent
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Lighthouse Score</span>
-                <Badge variant="secondary" className="text-green-600">
-                  95+
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Accessibility</span>
-                <Badge variant="secondary" className="text-green-600">
-                  WCAG 2.1 AA
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Security</span>
-                <Badge variant="secondary" className="text-green-600">
-                  Enterprise-grade
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </section>
-  );
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="fixed top-0 left-0 right-0 z-30 backdrop-blur-md bg-background/98 border-b border-border/30 shadow-lg">
+      <header className="fixed top-0 left-0 right-0 z-30 backdrop-blur-md bg-background/95 border-b border-border/50 shadow-sm">
         <div className="w-full px-4 sm:px-6 py-4 flex items-center gap-4">
-          <div className="size-10 grid place-items-center rounded-xl bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600 text-white shadow-lg ring-2 ring-green-500/20">
+          <div className="size-9 grid place-items-center rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md">
             <Leaf className="size-5" />
           </div>
-          <div>
-            <p className="text-sm font-semibold text-foreground/90">
+          <div className="flex-1">
+            <p className="text-sm text-muted-foreground font-medium">
               Green Twin
             </p>
-            <h1 className="text-base font-bold tracking-tight bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <h1 className="text-base font-semibold tracking-tight text-gradient">
               Your AI Carbon Companion
             </h1>
           </div>
+          <div className="hidden sm:flex items-center gap-3">
+            <ConnectionStatus />
+            <Badge
+              variant="secondary"
+              className="rounded-full px-3 py-1 font-medium border border-border/50"
+            >
+              Live grid:{" "}
+              <span className="font-semibold text-foreground">
+                {grid} gCO₂/kWh
+              </span>
+            </Badge>
+            <Switch checked={dark} onCheckedChange={setDark} />
+          </div>
+          <Button
+            className="ml-2 button-enhanced"
+            onClick={share}
+            variant="secondary"
+          >
+            <Share2 className="mr-2 size-4" /> Share
+          </Button>
+          <Button
+            className="ml-2 button-enhanced bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0"
+            asChild
+          >
+            <a href="/pitch#how-to-load">
+              <Leaf className="mr-2 size-4" /> Install extension
+            </a>
+          </Button>
 
-          {/* Navigation Buttons */}
-          <div className="flex items-center gap-2 flex-1 justify-center">
+          {/* Clerk Authentication */}
+          <SignedOut>
+            <SignInButton mode="modal">
+              <Button className="ml-2 button-enhanced" variant="outline">
+                Sign in
+              </Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button className="ml-2 button-enhanced" variant="default">
+                Sign up
+              </Button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "w-8 h-8",
+                },
+              }}
+            />
+          </SignedIn>
+        </div>
+      </header>
+
+      {/* Transparent Secondary Header with Floating Navigation */}
+      <nav className="fixed top-[85px] left-0 right-0 z-20">
+        <div className="w-full px-4 sm:px-6 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
             {NAVIGATION_TABS.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -1168,7 +944,7 @@ export const HomeClient = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 backdrop-blur-md border button-enhanced ${
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 min-h-[44px] backdrop-blur-md border button-enhanced ${
                     isActive
                       ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg border-primary/30 shadow-primary/20"
                       : "bg-background/85 text-muted-foreground hover:text-foreground hover:bg-background/95 border-border/40 hover:border-border/70 hover:shadow-md"
@@ -1185,90 +961,46 @@ export const HomeClient = () => {
               );
             })}
           </div>
-
-          {/* Theme Toggle and Install Extension */}
-          <div className="flex items-center gap-3">
-            <Switch checked={dark} onCheckedChange={setDark} />
-            <Button
-              className="button-enhanced bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0"
-              asChild
-              size="sm"
-            >
-              <a href="/pitch#how-to-load">
-                <Leaf className="mr-2 size-4" /> Install extension
-              </a>
-            </Button>
-          </div>
-
-          {/* Single Authentication Button */}
-          <SignedOut>
-            <SignUpButton mode="modal">
-              <Button className="button-enhanced" variant="default">
-                Sign In
-              </Button>
-            </SignUpButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8",
-                },
-              }}
-            />
-          </SignedIn>
         </div>
-      </header>
+      </nav>
 
-      <main
-        className={cn(
-          "flex-1 w-full px-4 sm:px-6 pt-[100px] pb-16 overflow-y-auto transition-all duration-300 ease-in-out",
-          sidebarIsOpen && "lg:mr-96"
-        )}
-      >
+      <main className="flex-1 w-full px-4 sm:px-6 pt-[150px] pb-20 overflow-y-auto">
         {/* Tabbed Content with smooth transitions */}
-        <div className="animate-in fade-in-0 duration-300 max-w-7xl mx-auto min-h-[calc(100vh-300px)]">
+        <div className="animate-in fade-in-0 duration-300 max-w-7xl mx-auto">
           {activeTab === "dashboard" && renderDashboard()}
+          {activeTab === "coach" && renderCoach()}
           {activeTab === "community" && renderCommunity()}
           {activeTab === "tools" && renderTools()}
           {activeTab === "analytics" && renderAnalytics()}
-          {activeTab === "about" && renderAbout()}
         </div>
-
-        {/* Footer as part of content flow with proper spacing */}
-        <footer
-          className={cn(
-            "mt-20 pt-12 border-t border-border/30 bg-background/50 backdrop-blur-sm transition-all duration-300",
-            showFooter ? "opacity-100" : "opacity-50"
-          )}
-        >
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground font-medium">
-              © {new Date().getFullYear()} Green Twin • Developer: Mayank (AI +
-              Fullstack + Robotics SWE)
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs px-3 py-1 button-enhanced font-semibold"
-              >
-                <Trophy className="mr-1 size-3" /> Challenge
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs px-3 py-1 button-enhanced font-semibold"
-                asChild
-              >
-                <a href="/pitch#how-to-load">
-                  <Leaf className="mr-1 size-3" /> Extension
-                </a>
-              </Button>
-            </div>
-          </div>
-        </footer>
       </main>
+
+      <footer className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-10 shadow-lg">
+        <div className="w-full px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-xs text-muted-foreground font-medium">
+            © {new Date().getFullYear()} Green Twin
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs px-3 py-1 button-enhanced font-semibold"
+            >
+              <Trophy className="mr-1 size-3" /> Challenge
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs px-3 py-1 button-enhanced font-semibold"
+              asChild
+            >
+              <a href="/pitch#how-to-load">
+                <Leaf className="mr-1 size-3" /> Extension
+              </a>
+            </Button>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

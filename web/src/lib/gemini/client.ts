@@ -100,14 +100,11 @@ export class GeminiClient {
         );
       }
 
-      if (
-        error instanceof Error &&
-        (error.message.includes("quota") || error.message.includes("429"))
-      ) {
+      if (error instanceof Error && error.message.includes("quota")) {
         throw this.createError(
           "QUOTA_EXCEEDED",
-          "The AI service is temporarily unavailable due to high demand. Please try again in a few minutes.",
-          { retryable: true, retryAfter: 60 }
+          "API quota exceeded. Please try again later.",
+          { retryable: true }
         );
       }
 

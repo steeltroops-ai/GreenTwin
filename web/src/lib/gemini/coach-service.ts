@@ -13,53 +13,6 @@ import {
   getFollowUpQuestions,
 } from "./prompts";
 
-// Fallback responses for when API is unavailable
-const FALLBACK_RESPONSES = [
-  "I'm currently experiencing high demand and my AI capabilities are temporarily limited. However, I can still help you with some general sustainability tips! 🌱\n\nHere are some quick eco-friendly actions you can take today:\n• Switch to LED light bulbs\n• Use a reusable water bottle\n• Walk or bike for short trips\n• Unplug electronics when not in use\n\nWould you like more specific advice on any of these topics?",
-
-  "While my AI processing is temporarily unavailable, I can share some proven carbon reduction strategies! 🌍\n\n**Energy Efficiency:**\n• Adjust your thermostat by 2°F (saves ~2000 lbs CO2/year)\n• Air dry clothes instead of using the dryer\n• Use cold water for washing clothes\n\n**Transportation:**\n• Combine errands into one trip\n• Work from home when possible\n• Consider carpooling or public transit\n\nWhat area would you like to focus on improving?",
-
-  "My AI services are currently at capacity, but I can still provide valuable sustainability guidance! 🌿\n\n**Quick Carbon Impact Facts:**\n• Eating one less meat meal per week saves 1,900 lbs CO2/year\n• Switching to renewable energy can reduce your footprint by 50%\n• Composting reduces methane emissions significantly\n\n**Simple Daily Actions:**\n• Use both sides of paper\n• Choose products with minimal packaging\n• Support local and seasonal foods\n\nI'll be back to full AI capacity soon. Try asking me again in a few minutes!",
-];
-
-function getFallbackResponse(userMessage: string): ChatMessage {
-  // Simple keyword matching for more relevant fallback responses
-  const message = userMessage.toLowerCase();
-  let responseIndex = 0;
-
-  if (
-    message.includes("energy") ||
-    message.includes("electric") ||
-    message.includes("power")
-  ) {
-    responseIndex = 1;
-  } else if (
-    message.includes("food") ||
-    message.includes("eat") ||
-    message.includes("diet")
-  ) {
-    responseIndex = 2;
-  } else {
-    responseIndex = Math.floor(Math.random() * FALLBACK_RESPONSES.length);
-  }
-
-  return {
-    id: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    role: "assistant",
-    content: FALLBACK_RESPONSES[responseIndex],
-    timestamp: Date.now(),
-    userId: "system",
-    conversationId: `fallback_conv_${Date.now()}`,
-    metadata: {
-      model: "fallback-system",
-      tokens: FALLBACK_RESPONSES[responseIndex].length / 4,
-      temperature: 0,
-      processingTime: 100,
-      isFallback: true,
-    },
-  };
-}
-
 export class AICoachService {
   private readonly baseSystemPrompt = SYSTEM_PROMPT;
 
@@ -129,36 +82,12 @@ export class AICoachService {
 
       return coachMessage;
     } catch (error) {
-      console.error("AI Coach Service Error:", error);
-
-      // Check if it's a quota exceeded error and use intelligent fallback
-      if (
-        error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "QUOTA_EXCEEDED"
-      ) {
-        const latestUserMessage = messages
-          .filter((m) => m.role === "user")
-          .pop();
-        const fallbackResponse = getFallbackResponse(
-          latestUserMessage?.content || ""
-        );
-
-        return {
-          ...fallbackResponse,
-          userId,
-          conversationId:
-            messages[0]?.conversationId || this.generateConversationId(),
-        };
-      }
-
-      // Generic error fallback
+      // Return error message as assistant response
       return {
         id: this.generateMessageId(),
         role: "assistant",
         content:
-          "I apologize, but I'm experiencing technical difficulties right now. Please try again in a moment. In the meantime, remember that small changes like using LED bulbs or taking shorter showers can make a meaningful impact on your carbon footprint! 🌱",
+          "I apologize, but I'm experiencing technical difficulties right now. Please try again in a moment. In the meantime, remember that small changes like using LED bulbs or taking shorter showers can make a meaningful impact on your carbon footprint!",
         timestamp: Date.now(),
         userId,
         conversationId:

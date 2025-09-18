@@ -35,17 +35,12 @@ import { useAIChat } from "@/hooks/useAIChat";
 
 interface ChatInterfaceProps {
   className?: string;
-  isSidebar?: boolean;
 }
 
-export function ChatInterface({
-  className,
-  isSidebar = false,
-}: ChatInterfaceProps) {
+export function ChatInterface({ className }: ChatInterfaceProps) {
   const { user } = useUser();
   const [input, setInput] = useState("");
   const [showHistory, setShowHistory] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(true);
 
   // Conversation management
   const {
@@ -116,9 +111,6 @@ export function ChatInterface({
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading || !user) return;
 
-    // Hide suggestions after first message
-    setShowSuggestions(false);
-
     // Create conversation if none exists
     let conversationId = currentConversationId;
     if (!conversationId) {
@@ -169,11 +161,9 @@ export function ChatInterface({
   };
 
   return (
-    <div
-      className={cn("h-full flex", isSidebar ? "flex-col" : "gap-4", className)}
-    >
+    <div className={cn("h-full flex gap-4", className)}>
       {/* Conversation History Sidebar */}
-      {showHistory && !isSidebar && (
+      {showHistory && (
         <div className="w-80 shrink-0">
           <ConversationHistory
             conversations={conversations}
@@ -200,49 +190,37 @@ export function ChatInterface({
       )}
 
       {/* Main Chat Interface */}
-      <Card
-        className={cn(
-          "flex-1 flex flex-col",
-          isSidebar && "border-0 shadow-none"
-        )}
-      >
-        {!isSidebar && (
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowHistory(!showHistory)}
-                className="h-8 w-8 p-0 mr-2"
-              >
-                {showHistory ? (
-                  <X className="size-4" />
-                ) : (
-                  <History className="size-4" />
-                )}
-              </Button>
-              <MessageSquare className="size-5" />
-              AI Coach
-              <Badge variant="secondary" className="ml-auto">
-                <Sparkles className="size-3 mr-1" />
-                Powered by Gemini
-              </Badge>
-            </CardTitle>
-            <CardDescription>
-              Get personalized carbon reduction advice, product analysis, and
-              climate fact-checking
-            </CardDescription>
-          </CardHeader>
-        )}
+      <Card className="flex-1 flex flex-col">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowHistory(!showHistory)}
+              className="h-8 w-8 p-0 mr-2"
+            >
+              {showHistory ? (
+                <X className="size-4" />
+              ) : (
+                <History className="size-4" />
+              )}
+            </Button>
+            <MessageSquare className="size-5" />
+            AI Coach
+            <Badge variant="secondary" className="ml-auto">
+              <Sparkles className="size-3 mr-1" />
+              Powered by Gemini
+            </Badge>
+          </CardTitle>
+          <CardDescription>
+            Get personalized carbon reduction advice, product analysis, and
+            climate fact-checking
+          </CardDescription>
+        </CardHeader>
 
         <CardContent className="flex-1 flex flex-col p-0">
           {/* Messages Area */}
-          <div
-            className={cn(
-              "flex-1 overflow-y-auto",
-              !isSidebar && "border-t border-border/50"
-            )}
-          >
+          <div className="flex-1 overflow-y-auto border-t border-border/50">
             <div className="space-y-0">
               {messages.map((message) => (
                 <ChatMessage
@@ -290,60 +268,47 @@ export function ChatInterface({
               </Button>
             </div>
 
-            {/* Quick Action Badges - Auto-hide after first message */}
-            {showSuggestions && (
-              <div className="flex flex-wrap gap-2 text-xs animate-in fade-in-0 duration-300">
-                <Badge
-                  variant="outline"
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => {
-                    setInput(
-                      "What's the carbon footprint of my daily commute?"
-                    );
-                    setShowSuggestions(false);
-                  }}
-                >
-                  <Zap className="size-3 mr-1" />
-                  Commute analysis
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => {
-                    setInput(
-                      "Find me sustainable alternatives to fast fashion"
-                    );
-                    setShowSuggestions(false);
-                  }}
-                >
-                  <Leaf className="size-3 mr-1" />
-                  Sustainable swaps
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => {
-                    setInput(
-                      "Is it true that electric cars are worse for the environment?"
-                    );
-                    setShowSuggestions(false);
-                  }}
-                >
-                  <AlertCircle className="size-3 mr-1" />
-                  Myth busting
-                </Badge>
-              </div>
-            )}
-
-            {/* Product Detection Badge - Always show when relevant */}
-            {isProductUrl(input) && (
-              <div className="flex gap-2 text-xs">
+            {/* Quick Action Badges */}
+            <div className="flex flex-wrap gap-2 text-xs">
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() =>
+                  setInput("What's the carbon footprint of my daily commute?")
+                }
+              >
+                <Zap className="size-3 mr-1" />
+                Commute analysis
+              </Badge>
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() =>
+                  setInput("Find me sustainable alternatives to fast fashion")
+                }
+              >
+                <Leaf className="size-3 mr-1" />
+                Sustainable swaps
+              </Badge>
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() =>
+                  setInput(
+                    "Is it true that electric cars are worse for the environment?"
+                  )
+                }
+              >
+                <AlertCircle className="size-3 mr-1" />
+                Myth busting
+              </Badge>
+              {isProductUrl(input) && (
                 <Badge variant="secondary">
                   <LinkIcon className="size-3 mr-1" />
                   Product detected
                 </Badge>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
