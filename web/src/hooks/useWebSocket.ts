@@ -33,9 +33,9 @@ interface UseWebSocketOptions {
 export function useWebSocket(options: UseWebSocketOptions = {}) {
   const {
     url = "ws://localhost:8080",
-    reconnectAttempts = 5,
-    reconnectDelay = 1000,
-    heartbeatInterval = 30000,
+    reconnectAttempts = 3, // Reduced attempts
+    reconnectDelay = 5000, // Increased delay to 5 seconds
+    heartbeatInterval = 60000, // Increased to 60 seconds to reduce requests
     onMessage,
     onConnect,
     onDisconnect,
@@ -91,7 +91,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
         try {
           const message: WebSocketMessage = JSON.parse(event.data);
 
-          updateStats((prev) => ({
+          setStats((prev) => ({
             ...prev,
             messagesReceived: prev.messagesReceived + 1,
             lastMessage: Date.now(),
@@ -145,7 +145,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
         console.error("Green Twin: WebSocket error:", error);
         onError?.(error);
 
-        updateStats((prev) => ({
+        setStats((prev) => ({
           ...prev,
           connected: false,
           connectionState: "disconnected",
@@ -236,7 +236,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         try {
           wsRef.current.send(JSON.stringify(fullMessage));
-          updateStats((prev) => ({
+          setStats((prev) => ({
             ...prev,
             messagesSent: prev.messagesSent + 1,
           }));
@@ -333,36 +333,66 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
     });
   }, [stopHeartbeat, updateStats]);
 
-  // Initialize connection on mount
+  // Initialize connection on mount with proper debouncing
   useEffect(() => {
-    // Initialize WebSocket server first
-    fetch("/api/websocket")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Green Twin: WebSocket server status:", data);
-        // Connect after server is ready
-        setTimeout(connect, 1000);
-      })
-      .catch((error) => {
-        console.log(
-          "Green Twin: WebSocket server not available, running in offline mode"
-        );
-        // Set to disconnected state but don't spam console with errors
-        updateStats({
-          connected: false,
-          connectionState: "disconnected",
-        });
+    let mounted = true;
+    let initTimeout: NodeJS.Timeout;
+    let hasInitialized = false;
+
+    // Only initialize once and when component is actually needed
+    const shouldConnect =
+      typeof window !== "undefined" &&
+      document.visibilityState === "visible" &&
+      !hasInitialized;
+
+    if (!shouldConnect) {
+      updateStats({
+        connected: false,
+        connectionState: "disconnected",
       });
+      return;
+    }
+
+    // Debounce initialization to prevent rapid successive calls
+    initTimeout = setTimeout(() => {
+      if (!mounted || hasInitialized) return;
+      hasInitialized = true;
+
+      // Only fetch once, don't retry on every render
+      fetch("/api/websocket")
+        .then((response) => {
+          if (!response.ok || !mounted) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (!mounted) return;
+          console.log("Green Twin: WebSocket server status:", data);
+          // Connect after server is ready with longer delay to reduce requests
+          setTimeout(() => {
+            if (mounted) connect();
+          }, 3000); // Increased delay
+        })
+        .catch(() => {
+          if (!mounted) return;
+          console.log(
+            "Green Twin: WebSocket server not available, running in offline mode"
+          );
+          updateStats({
+            connected: false,
+            connectionState: "disconnected",
+          });
+        });
+    }, 2000); // Debounce initialization
 
     return () => {
+      mounted = false;
+      hasInitialized = false;
+      if (initTimeout) clearTimeout(initTimeout);
       disconnect();
     };
-  }, [connect, disconnect, updateStats]);
+  }, []); // Remove dependencies to prevent re-initialization
 
   return {
     connected: stats.connected,

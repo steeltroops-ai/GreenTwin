@@ -24,6 +24,10 @@ web/.next/
 .DS_Store
 *.pem
 
+# local env files
+.env*.local
+.env
+
 # debug
 npm-debug.log*
 yarn-debug.log*

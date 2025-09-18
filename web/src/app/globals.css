@@ -124,11 +124,148 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-sans), Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+    font-family:
+      var(--font-sans),
+      Inter,
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Arial,
+      Noto Sans,
+      "Apple Color Emoji",
+      "Segoe UI Emoji";
   }
 }
 
 /* Hide Next.js error overlay portal */
 nextjs-portal {
   display: none !important;
+}
+
+/* Custom utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth transitions for tab content */
+.animate-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom utilities for better UX */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Enhanced theme improvements */
+.card-enhanced {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--background)) 0%,
+    hsl(var(--muted) / 0.3) 100%
+  );
+  border: 1px solid hsl(var(--border) / 0.8);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.card-enhanced:hover {
+  border-color: hsl(var(--border));
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transform: translateY(-1px);
+}
+
+.button-enhanced {
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+}
+
+.button-enhanced:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--primary) / 0.8) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .animate-in {
+    animation: fadeInMobile 0.2s ease-in-out;
+  }
+}
+
+@keyframes fadeInMobile {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure proper touch targets on mobile */
+@media (max-width: 768px) {
+  button {
+    min-height: 44px;
+  }
+
+  /* Secondary header responsive adjustments */
+  .secondary-header {
+    padding: 0.5rem 1rem;
+  }
+
+  .secondary-header .nav-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Desktop secondary header styles */
+@media (min-width: 769px) {
+  .secondary-header {
+    padding: 0.75rem 1.5rem;
+  }
+
+  .secondary-header .nav-button {
+    padding: 0.5rem 1rem;
+  }
 }
