@@ -59,6 +59,7 @@ import {
 } from "@/contexts/WebSocketContext";
 import { PredictiveTimeline } from "@/components/PredictiveTimeline";
 import { AchievementSystem } from "@/components/AchievementSystem";
+import { ChatInterface } from "@/components/ai-coach/ChatInterface";
 
 function formatKg(kg: number | undefined) {
   if (kg === undefined || kg === null || isNaN(kg)) {
@@ -137,35 +138,6 @@ export const HomeClient = () => {
       mounted = false;
     };
   }, []);
-
-  // Chat state (demo-only, local LLM stub)
-  type Msg = { role: "user" | "assistant"; text: string };
-  const [messages, setMessages] = useState<Msg[]>([
-    {
-      role: "assistant",
-      text: "I'm your Green Twin. I track your footprint, bust carbon myths, and nudge you when the grid is clean. Ask me anything or paste a product link to estimate its CO₂e.",
-    },
-  ]);
-  const [input, setInput] = useState("");
-  function send() {
-    if (!input.trim()) return;
-    const q = input.trim();
-    setMessages((m) => [...m, { role: "user", text: q }]);
-    setInput("");
-    setTimeout(() => {
-      const savings = 2 + Math.random() * 3;
-      const dollars = savings * 0.18 * 12; // rough annualized electricity savings
-      const reply = `Try this swap: schedule laundry at 3–5am when grid is cleaner (now ~${grid} gCO₂/kWh). Estimated ${savings.toFixed(
-        1
-      )} kg CO₂e/mo and ${currency(dollars)} saved/yr. Also, ${
-        q.toLowerCase().includes("beef")
-          ? "swap beef for lentils 1×/wk to cut ~18 kg/mo"
-          : "consider public transit 1×/wk to cut ~12 kg/mo"
-      }.`;
-      setMessages((m) => [...m, { role: "assistant", text: reply }]);
-      setFootprint((f) => ({ ...f, month: Math.max(0, f.month - savings) }));
-    }, 600);
-  }
 
   const cleanWindow = useMemo(() => {
     const w = windows?.[0];
@@ -249,13 +221,13 @@ export const HomeClient = () => {
     setSwapDesc("");
     setSwapKg("");
     // optional: also drop a message in coach thread for visibility
-    setMessages((m) => [
-      ...m,
-      {
-        role: "assistant",
-        text: `Nice swap: ${swapDesc}. Estimated −${v.toFixed(1)} kg CO₂e this month.`,
-      },
-    ]);
+    // setMessages((m: any[]) => [
+    //   ...m,
+    //   {
+    //     role: "assistant",
+    //     text: `Nice swap: ${swapDesc}. Estimated −${v.toFixed(1)} kg CO₂e this month.`,
+    //   },
+    // ]);
   }
 
   // Render functions for each tab
@@ -652,55 +624,9 @@ export const HomeClient = () => {
 
   const renderCoach = () => (
     <section className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
-      <Card className="lg:col-span-2 h-full">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="size-5" /> AI Coach
-          </CardTitle>
-          <CardDescription>
-            Ask for product footprints, climate myth‑busting, or best swaps with
-            savings.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col h-[420px]">
-          <div className="flex-1 overflow-y-auto rounded border p-3 space-y-3 bg-background/50">
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                className={`text-sm ${
-                  m.role === "user" ? "text-right" : "text-left"
-                }`}
-              >
-                <span
-                  className={`inline-block px-3 py-2 rounded-lg ${
-                    m.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  }`}
-                >
-                  {m.text}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 flex items-center gap-2">
-            <Input
-              placeholder="Paste a product link or ask a question…"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && send()}
-            />
-            <Button onClick={send} size="sm">
-              Send <ArrowRight className="ml-1 size-3" />
-            </Button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
-            <Badge variant="outline">Amazon cart scan</Badge>
-            <Badge variant="outline">Flight search nudge</Badge>
-            <Badge variant="outline">Misinformation detector</Badge>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="lg:col-span-2 h-[500px]">
+        <ChatInterface />
+      </div>
 
       <Card>
         <CardHeader className="pb-2">
@@ -786,7 +712,7 @@ export const HomeClient = () => {
                   </TableCell>
                   <TableCell>{p.streak} days</TableCell>
                   <TableCell className="text-right font-medium">
-                    {formatKg(p.saved)}
+                    {formatKg(p.kg)}
                   </TableCell>
                 </TableRow>
               ))}

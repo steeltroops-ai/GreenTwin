@@ -50,8 +50,10 @@ export function PredictiveTimeline({ className }: PredictiveTimelineProps) {
 
       for (let j = 0; j < eventsPerDay; j++) {
         const eventTime = dayStart + Math.random() * 24 * 60 * 60 * 1000;
-        const eventTypes = ["product", "travel", "energy", "food"];
-        const type = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+        const eventTypes = ["product", "travel", "energy", "food"] as const;
+        const type = eventTypes[
+          Math.floor(Math.random() * eventTypes.length)
+        ] as "product" | "travel" | "energy" | "food";
 
         let kg = 0.5 + Math.random() * 3; // 0.5-3.5 kg
         if (type === "travel") kg *= 2; // Travel has higher emissions
